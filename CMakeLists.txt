@@ -62,9 +62,10 @@ target_link_libraries(hello_glut ${LIBS})
 #)
 
 set(hello_names
+        hello_glad
         hello_triangle
         hello_shader
-        hello_glad
+        hello_shader_class
 )
 
 foreach(name ${hello_names})

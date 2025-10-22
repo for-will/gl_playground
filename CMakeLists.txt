@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 project(gl_playground)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 unset(GLTOOLS_LIBRARY CACHE)
 
@@ -50,19 +50,6 @@ add_executable(hello_glut src/hello_glut.cpp)
 
 target_link_libraries(hello_glut ${LIBS})
 
-
-#add_executable(hello_glad
-#        src/hello_glad.cpp
-#        glad/src/glad.c
-#)
-#
-#target_link_libraries(hello_glad
-#        ${OPENGL_LIBRARIES}
-#        ${GLFW_LIBRARIES}
-#        ${M_LIBRARY}
-#        ${X11_LIBRARIES}
-#)
-
 set(hello_names
         hello_glad
         hello_triangle
@@ -70,6 +57,7 @@ set(hello_names
         hello_shader_class
         hello_texture
         hello_transformation
+        hello_coordinate
 )
 
 foreach (name ${hello_names})

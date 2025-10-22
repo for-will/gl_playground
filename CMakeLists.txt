@@ -25,7 +25,8 @@ include_directories(${GLEW_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS})
 link_directories(${GLEW_LIBRARY_DIRS} ${GLFW_LIBRARY_DIRS})
 
 include_directories("${PROJECT_SOURCE_DIR}/GLTools/include"
-                    "${PROJECT_SOURCE_DIR}/glad/include"
+        "${PROJECT_SOURCE_DIR}/glad/include"
+        "${PROJECT_SOURCE_DIR}/stb"
 )
 
 add_executable(gl_hello main.cpp)
@@ -66,12 +67,14 @@ set(hello_names
         hello_triangle
         hello_shader
         hello_shader_class
+        hello_texture
 )
 
-foreach(name ${hello_names})
+foreach (name ${hello_names})
     add_executable(${name}
             src/${name}.cpp
             glad/src/glad.c
+            stb/stb_image.cpp
     )
 
     target_link_libraries(${name}
@@ -80,17 +83,5 @@ foreach(name ${hello_names})
             ${M_LIBRARY}
             ${X11_LIBRARIES}
     )
-endforeach()
-
-#add_executable(hello_triangle
-#        src/hello_triangle.cpp
-#        glad/src/glad.c
-#)
-#
-#target_link_libraries(hello_triangle
-#        ${OPENGL_LIBRARIES}
-#        ${GLFW_LIBRARIES}
-#        ${M_LIBRARY}
-#        ${X11_LIBRARIES}
-#)
+endforeach ()
 

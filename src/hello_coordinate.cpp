@@ -67,6 +67,20 @@ constexpr float vertices[] = {
     -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
 };
 
+// world space positions of our cubes
+constexpr glm::vec3 cubePositions[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f, 2.0f, -2.5f),
+    glm::vec3(1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f)
+};
+
 
 int main(int argc, char *argv[]) {
     glfwInit();
@@ -147,12 +161,12 @@ int main(int argc, char *argv[]) {
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 1); // 手动设置
     ourShader.setInt("texture2", 2); // 或者使用着色器类设置
 
-    auto model = glm::rotate(glm::mat4(), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // auto model = glm::rotate(glm::mat4(), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
 
-    const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    // const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
+    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     const auto viewLoc = glGetUniformLocation(ourShader.ID, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     const auto projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
@@ -173,16 +187,31 @@ int main(int argc, char *argv[]) {
         ourShader.use();
         ourShader.setFloat("mixValue", mixValue);
 
-        model = glm::rotate(glm::mat4(), (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.5f, 0.0f));
-        auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // model = glm::rotate(glm::mat4(), (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.5f, 0.0f));
+        // auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        //
+        //
+        // // 绘制三角形
+        // glBindVertexArray(VAO);
+        // // glBindTexture(GL_TEXTURE_2D, texture2);
+        // // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        for (auto i = 0; i < std::size(cubePositions); i++) {
+            const auto &ps = cubePositions[i];
+            auto model = glm::translate(glm::mat4(), ps);
+            float angle = 20.0f * i;
+            if (i % 3 == 0) {
+                angle += glfwGetTime();
+            }
 
-        // 绘制三角形
-        glBindVertexArray(VAO);
-        // glBindTexture(GL_TEXTURE_2D, texture2);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            // model = glm::translate(model, ps);
+            ourShader.setMat4("model", model);
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // 交换缓冲并查询IO事件
         glfwPollEvents();

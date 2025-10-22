@@ -1,15 +1,14 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
 #include <ostream>
 
-#include "stb_image.h"
 #include "shader_s.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "texture_s.h"
 
 
 // stores how much we're seeing of either texture
@@ -23,6 +22,50 @@ void processInput(GLFWwindow *window);
 
 #define SCREEN_WIDTH 800.0f
 #define SCREEN_HEIGHT 600.0f
+
+constexpr float vertices[] = {
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+};
 
 
 int main(int argc, char *argv[]) {
@@ -52,13 +95,13 @@ int main(int argc, char *argv[]) {
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    constexpr float vertices[] = {
-        // ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        0.5f, 0.5f, 0.0f,/*****/1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
-        0.5f, -0.5f, 0.0f,/****/0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
-        -0.5f, -0.5f, 0.0f,/***/0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-        -0.5f, 0.5f, 0.0f,/****/1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 左上
-    };
+    // constexpr float vertices[] = {
+    //     // ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+    //     0.5f, 0.5f, 0.0f,/*****/1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
+    //     0.5f, -0.5f, 0.0f,/****/0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
+    //     -0.5f, -0.5f, 0.0f,/***/0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
+    //     -0.5f, 0.5f, 0.0f,/****/1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 左上
+    // };
 
     constexpr GLubyte indices[] = {
         0, 1, 3, // first triangle
@@ -79,13 +122,13 @@ int main(int argc, char *argv[]) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // 位置属性
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
-    // 颜色属性
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    // // 颜色属性
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+    // glEnableVertexAttribArray(1);
     // 纹理坐标属性
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
@@ -97,51 +140,15 @@ int main(int argc, char *argv[]) {
 
 
     // 创建纹理
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // 为当前绑定的纹理对象设置环绕、过滤方式
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    // 加载并生成纹理
-    stbi_set_flip_vertically_on_load(true);
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("../assets/container.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    data = stbi_load("../assets/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    loadTexture("../assets/container.jpg",GL_RGB,GL_TEXTURE1);
+    loadTexture("../assets/awesomeface.png", GL_RGBA,GL_TEXTURE2);
 
     ourShader.use(); // 不要忘记在设置uniform变量之前激活着色器程序！
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 1); // 手动设置
     ourShader.setInt("texture2", 2); // 或者使用着色器类设置
 
     auto model = glm::rotate(glm::mat4(), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
+    auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
 
     const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
@@ -152,6 +159,7 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
+    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
         // 输入
         processInput(window);
@@ -159,17 +167,22 @@ int main(int argc, char *argv[]) {
         // 渲染
         // 清除颜色缓冲
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // 记得激活着色器
         ourShader.use();
         ourShader.setFloat("mixValue", mixValue);
 
+        model = glm::rotate(glm::mat4(), (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.5f, 0.0f));
+        auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
 
         // 绘制三角形
         glBindVertexArray(VAO);
         // glBindTexture(GL_TEXTURE_2D, texture2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // 交换缓冲并查询IO事件
         glfwPollEvents();

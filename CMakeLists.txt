@@ -27,6 +27,7 @@ link_directories(${GLEW_LIBRARY_DIRS} ${GLFW_LIBRARY_DIRS})
 include_directories("${PROJECT_SOURCE_DIR}/GLTools/include"
         "${PROJECT_SOURCE_DIR}/glad/include"
         "${PROJECT_SOURCE_DIR}/stb"
+        "${PROJECT_SOURCE_DIR}"
 )
 
 add_executable(gl_hello main.cpp)
@@ -68,6 +69,7 @@ set(hello_names
         hello_shader
         hello_shader_class
         hello_texture
+        hello_transformation
 )
 
 foreach (name ${hello_names})

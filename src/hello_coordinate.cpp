@@ -23,13 +23,38 @@ void processInput(GLFWwindow *window);
 #define SCREEN_WIDTH 800.0f
 #define SCREEN_HEIGHT 600.0f
 
+
 constexpr float vertices[] = {
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // B1
+    0.5f, -0.5f, -0.5f, 1.0f, 1.0f, // B2
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // B3
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // B4
+
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // T1
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // T2
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // T3
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, // T4
+
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // T1
+    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // T2
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // B2
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // B1
+
+    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // T2
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // T3
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // B3
+    0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // B2
+
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // T4
+    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // T3
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // B3
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // B4
+
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // T1
+    -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // T4
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // B1
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // B4
+
 
     -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
     0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
@@ -65,6 +90,25 @@ constexpr float vertices[] = {
     0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
     -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
     -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+};
+constexpr GLubyte indices[] = {
+    0, 1, 2, // first triangle
+    0, 2, 3, // second triangle
+
+    4, 5, 6,
+    4, 6, 7,
+
+    8, 9, 10,
+    8, 10, 11,
+
+    12, 13, 14,
+    12, 14, 15,
+
+    16, 17, 18,
+    16, 18, 19,
+
+    20, 21, 22,
+    20, 22, 23,
 };
 
 // world space positions of our cubes
@@ -117,10 +161,6 @@ int main(int argc, char *argv[]) {
     //     -0.5f, 0.5f, 0.0f,/****/1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 左上
     // };
 
-    constexpr GLubyte indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3 // second triangle
-    };
 
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -162,15 +202,17 @@ int main(int argc, char *argv[]) {
     ourShader.setInt("texture2", 2); // 或者使用着色器类设置
 
     // auto model = glm::rotate(glm::mat4(), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-    auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+    const auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    const auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+    ourShader.setMat4("view", view);
+    ourShader.setMat4("projection", projection);
 
     // const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
     // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    const auto viewLoc = glGetUniformLocation(ourShader.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    const auto projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    // const auto viewLoc = glGetUniformLocation(ourShader.ID, "view");
+    // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    // const auto projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
+    // glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
     glEnable(GL_DEPTH_TEST);
@@ -210,7 +252,8 @@ int main(int argc, char *argv[]) {
             // model = glm::translate(model, ps);
             ourShader.setMat4("model", model);
             glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // glDrawArrays(GL_TRIANGLES, 0, 36);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (const void *) (0));
         }
 
         // 交换缓冲并查询IO事件

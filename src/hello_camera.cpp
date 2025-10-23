@@ -52,44 +52,9 @@ constexpr float vertices[] = {
 
     -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // T1
     -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // T4
-    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // B1
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // B4
+    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // B4
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // B1
 
-
-    // -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    // 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    // 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    // 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    // -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-    // -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    //
-    // -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    // -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    // -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    // -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    // -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    // -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    //
-    // 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    // 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    // 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    // 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    // 0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    // 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    //
-    // -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    // 0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-    // 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    // 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    // -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    // -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    //
-    // -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    // 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    // 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    // 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    // -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-    // -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
 };
 constexpr GLubyte indices[] = {
     0, 1, 2, // first triangle
@@ -202,9 +167,9 @@ int main(int argc, char *argv[]) {
     ourShader.setInt("texture2", 2); // 或者使用着色器类设置
 
     // auto model = glm::rotate(glm::mat4(), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    const auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    // const auto view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     const auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
-    ourShader.setMat4("view", view);
+    // ourShader.setMat4("view", view);
     ourShader.setMat4("projection", projection);
 
     // const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
@@ -239,6 +204,11 @@ int main(int argc, char *argv[]) {
         // // glBindTexture(GL_TEXTURE_2D, texture2);
         // // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
         // glDrawArrays(GL_TRIANGLES, 0, 36);
+        constexpr float radius = 10.0f;
+        float eyeX = sin(glfwGetTime()) * radius;
+        float eyeZ = cos(glfwGetTime()) * radius;
+        auto view = glm::lookAt(glm::vec3(eyeX, 0.0f, eyeZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        ourShader.setMat4("view", view);
 
         for (auto i = 0; i < std::size(cubePositions); i++) {
             const auto &ps = cubePositions[i];
@@ -253,7 +223,7 @@ int main(int argc, char *argv[]) {
             ourShader.setMat4("model", model);
             glBindVertexArray(VAO);
             // glDrawArrays(GL_TRIANGLES, 0, 36);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (const void *) (0));
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, static_cast<const void *>(nullptr));
         }
 
         // 交换缓冲并查询IO事件

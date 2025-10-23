@@ -58,6 +58,7 @@ set(hello_names
         hello_texture
         hello_transformation
         hello_coordinate
+        hello_camera
 )
 
 foreach (name ${hello_names})

@@ -59,6 +59,7 @@ set(hello_names
         hello_transformation
         hello_coordinate
         hello_camera
+        hello_camera_move
 )
 
 foreach (name ${hello_names})

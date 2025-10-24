@@ -7,6 +7,7 @@
 #include <iostream>
 #include <ostream>
 
+#include "camera.h"
 #include "shader_s.h"
 #include "texture_s.h"
 
@@ -23,11 +24,13 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 #define SCREEN_WIDTH 800.0f
 #define SCREEN_HEIGHT 600.0f
 
+// Camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
-float yaw = -90.0f;
-float pitch = 0.0f;
-float fov = 45.0f;
+// float yaw = -90.0f;
+// float pitch = 0.0f;
+// float fov = 45.0f;
 
 
 constexpr float vertices[] = {
@@ -96,9 +99,9 @@ constexpr glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+// glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+// glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+// glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 
 int main(int argc, char *argv[]) {
@@ -214,9 +217,9 @@ int main(int argc, char *argv[]) {
         //
         //
 
-        auto view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        ourShader.setMat4("view", view);
-        const auto projection = glm::perspective(glm::radians(fov), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+        // auto view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        ourShader.setMat4("view", camera.GetViewMatrix());
+        const auto projection = glm::perspective(glm::radians(camera.Zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
 
         // 绘制三角形
@@ -274,16 +277,19 @@ void processInput(GLFWwindow *window) {
 
     const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPos += cameraSpeed * cameraFront;
+        // cameraPos += cameraSpeed * cameraFront;
+        camera.ProcessKeyboard(FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        // cameraPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        camera.ProcessKeyboard(LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        // cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+        camera.ProcessKeyboard(RIGHT, deltaTime);
     }
 }
 
@@ -302,31 +308,33 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
 
-    float sensitivity = 0.05;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    // float sensitivity = 0.05;
+    // xoffset *= sensitivity;
+    // yoffset *= sensitivity;
+    camera.ProcessMouseMovement(xoffset, yoffset);
 
-    yaw += xoffset;
-    pitch += yoffset;
+    // yaw += xoffset;
+    // pitch += yoffset;
+    //
+    // if (pitch > 89.0f)
+    //     pitch = 89.0f;
+    // if (pitch < -89.0f)
+    //     pitch = -89.0f;
 
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    // glm::vec3 front;
+    // front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // front.y = sin(glm::radians(pitch));
+    // front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // cameraFront = glm::normalize(front);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    fov -= static_cast<float>(yoffset);
-    if (fov < 1.0f)
-        fov = 1.0f;
-    if (fov > 65.0f)
-        fov = 65.0f;
+    // fov -= static_cast<float>(yoffset);
+    // if (fov < 1.0f)
+    //     fov = 1.0f;
+    // if (fov > 65.0f)
+    //     fov = 65.0f;
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }

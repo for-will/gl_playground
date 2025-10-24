@@ -16,8 +16,18 @@ float mixValue = 0.2f;
 
 void processInput(GLFWwindow *window);
 
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+
 #define SCREEN_WIDTH 800.0f
 #define SCREEN_HEIGHT 600.0f
+
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
+float yaw = -90.0f;
+float pitch = 0.0f;
+float fov = 45.0f;
 
 
 constexpr float vertices[] = {
@@ -107,6 +117,9 @@ int main(int argc, char *argv[]) {
     }
     glfwMakeContextCurrent(window);
     // glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -166,8 +179,8 @@ int main(int argc, char *argv[]) {
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 1); // 手动设置
     ourShader.setInt("texture2", 2); // 或者使用着色器类设置
 
-    const auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
-    ourShader.setMat4("projection", projection);
+    // const auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+    // ourShader.setMat4("projection", projection);
 
     // const auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
     // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -179,6 +192,10 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
+        const float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // 输入
         processInput(window);
 
@@ -199,6 +216,8 @@ int main(int argc, char *argv[]) {
 
         auto view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         ourShader.setMat4("view", view);
+        const auto projection = glm::perspective(glm::radians(fov), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
+        ourShader.setMat4("projection", projection);
 
         // 绘制三角形
         glBindVertexArray(VAO);
@@ -253,9 +272,9 @@ void processInput(GLFWwindow *window) {
         }
     }
 
-    constexpr float cameraSpeed = 0.05f; // adjust accordingly
+    const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-       cameraPos += cameraSpeed * cameraFront;
+        cameraPos += cameraSpeed * cameraFront;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         cameraPos -= cameraSpeed * cameraFront;
@@ -266,4 +285,48 @@ void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
     }
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static bool firstMouse = true;
+    static double lastX = 400, lastY = 300;
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.05;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    fov -= static_cast<float>(yoffset);
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 65.0f)
+        fov = 65.0f;
 }

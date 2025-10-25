@@ -60,6 +60,7 @@ set(hello_names
         hello_coordinate
         hello_camera
         hello_camera_move
+        hello_lamp
 )
 
 foreach (name ${hello_names})

@@ -21,13 +21,10 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-#define SCREEN_WIDTH 800.0f
-#define SCREEN_HEIGHT 600.0f
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-// Camera
-Camera camera(glm::vec3(0.0f, 1.0f, 4.0f));
-float deltaTime = 0.0f; // 当前帧与上一帧的时间差
-float lastFrame = 0.0f; // 上一帧的时间
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 600
 
 
 constexpr float vertices[] = {
@@ -111,7 +108,12 @@ constexpr glm::vec3 cubePositions[] = {
 // glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 // glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 // glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 lightPos(0.2f, 1.5f, 1.2f);
 
+// Camera
+Camera camera(glm::vec3(0.0f, 1.0f, 4.0f));
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
 
 int main(int argc, char *argv[]) {
     glfwInit();
@@ -128,7 +130,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     glfwMakeContextCurrent(window);
-    // glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // glfwSetCursorPosCallback(window, mouse_callback);
     // glfwSetScrollCallback(window, scroll_callback);
@@ -139,7 +141,7 @@ int main(int argc, char *argv[]) {
     }
 
     const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
-    const auto lightShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
+    const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
 
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -180,9 +182,9 @@ int main(int argc, char *argv[]) {
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
-    unsigned int lightVAO;
-    glGenVertexArrays(1, &lightVAO);
-    glBindVertexArray(lightVAO);
+    unsigned int lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
+    glBindVertexArray(lightCubeVAO);
     // 只需要绑定VBO不用再次设置VBO的数据，因为箱子的VBO数据中已经包含了正确的立方体顶点数据
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -191,29 +193,6 @@ int main(int argc, char *argv[]) {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-
-
-    // 创建纹理
-    loadTexture("../assets/container.jpg",GL_RGB,GL_TEXTURE1);
-    loadTexture("../assets/awesomeface.png", GL_RGBA,GL_TEXTURE2);
-
-    lightingShader.use(); // 不要忘记在设置uniform变量之前激活着色器程序！
-    glUniform1i(glGetUniformLocation(lightingShader.ID, "texture1"), 1); // 手动设置
-    lightingShader.setInt("texture2", 2); // 或者使用着色器类设置
-
-    const auto projection = glm::perspective(glm::radians(45.0f), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
-    lightingShader.setMat4("projection", projection);
-
-    constexpr glm::vec3 lightPos(1.2f, 1.0f, 0.0f);
-    auto model = glm::mat4();
-    model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
-    lightShader.use();
-    lightShader.setMat4("projection", projection);
-    lightShader.setMat4("model", model);
-    lightShader.setMat4("view", camera.GetViewMatrix());
-    lightShader.setInt("texture1", 1);
-    lightShader.setInt("texture2", 2);
 
 
     glEnable(GL_DEPTH_TEST);
@@ -230,38 +209,45 @@ int main(int argc, char *argv[]) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // 记得激活着色器
+        // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
-        lightingShader.setFloat("mixValue", mixValue);
-
-        // model = glm::rotate(glm::mat4(), (float) glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.5f, 0.0f));
-        // auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        //
-        //
-
-        // auto view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        lightingShader.setMat4("view", camera.GetViewMatrix());
-        const auto projection = glm::perspective(glm::radians(camera.Zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f);
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setVec3("lightPos", lightPos);
+        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        // lightingShader.setVec3("lightPos", lightPos);
         lightingShader.setVec3("viewPos", camera.Position);
+        // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
+        lightPos.x = sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+        lightingShader.setVec3("lightPos", lightPos);
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        lightingShader.setMat4("projection", projection);
+        lightingShader.setMat4("view", view);
 
         // 绘制三角形
         glBindVertexArray(VAO);
-        const auto &ps = glm::vec3(0.0f, 0.0f, -1.0f);
-        auto model = glm::translate(glm::mat4(), ps);
-        model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        // const auto &ps = glm::vec3(0.0f, 0.0f, -1.0f);
+        // auto model = glm::translate(glm::mat4(), ps);
+        // model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 model = glm::mat4(1.0f);
         lightingShader.setMat4("model", model);
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
-        // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, static_cast<const void *>(nullptr));
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        lightShader.use();
-        lightShader.setMat4("view", camera.GetViewMatrix());
-        lightShader.setMat4("projection", projection);
-        glBindVertexArray(lightVAO);
+        // lightCubeShader.use();
+        // lightCubeShader.setMat4("view", camera.GetViewMatrix());
+        // lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
+        glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, static_cast<const void *>(nullptr));
@@ -320,6 +306,19 @@ void processInput(GLFWwindow *window) {
         // cameraPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
         camera.ProcessKeyboard(RIGHT, deltaTime);
     }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        camera.ProcessMouseMovement(0, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        camera.ProcessMouseMovement(0, -deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        camera.ProcessMouseMovement( -deltaTime, 0);
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        camera.ProcessMouseMovement( deltaTime, 0);
+    }
 }
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
@@ -366,4 +365,14 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     // if (fov > 65.0f)
     //     fov = 65.0f;
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }

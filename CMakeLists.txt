@@ -61,6 +61,7 @@ set(hello_names
         hello_camera
         hello_camera_move
         hello_lamp
+        02_02_basic_lighting
 )
 
 foreach (name ${hello_names})

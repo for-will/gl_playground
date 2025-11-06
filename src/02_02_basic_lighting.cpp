@@ -137,7 +137,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
+    // const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
+    const auto lightingShader = Shader("../shader/basic_lighting_e2.vert", "../shader/basic_lighting_e2.frag");
     const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
 
 

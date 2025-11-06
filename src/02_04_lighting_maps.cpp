@@ -165,6 +165,7 @@ int main(int argc, char *argv[]) {
     glEnableVertexAttribArray(2);
 
     loadTexture("../assets/container2.png", GL_RGBA, GL_TEXTURE0);
+    loadTexture("../assets/container2_specular.png", GL_RGBA, GL_TEXTURE1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -230,7 +231,7 @@ int main(int argc, char *argv[]) {
 
         // material properties
         lightingShader.setInt("material.diffuse", 0);
-        lightingShader.setVec3("material.specular", 0.5, 0.5, 0.5);
+        lightingShader.setInt("material.specular", 1);
         lightingShader.setFloat("material.shininess", 64.0f);
 
         // view/projection transformations

@@ -216,18 +216,18 @@ int main(int argc, char *argv[]) {
         lightPos.x = sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
         lightingShader.setVec3("light.position", lightPos);
-        // lightingShader.setVec3("light.ambient", 0.2f * lightColor);
-        // lightingShader.setVec3("light.diffuse", 0.5f * lightColor);
-        // lightingShader.setVec3("light.specular", glm::vec3(1.0f));
+        lightingShader.setVec3("light.ambient", glm::vec3(0.2f));
+        lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
+        lightingShader.setVec3("light.specular", glm::vec3(1.0f));
         // lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
         // lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
         // lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.4f);
         // lightingShader.setFloat("material.shininess", 32.0f);
 
-        // light properties
-        lightingShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
-        lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+        // // light properties
+        // lightingShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
+        // lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // lightingShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
 
         // material properties
         lightingShader.setInt("material.diffuse", 0);

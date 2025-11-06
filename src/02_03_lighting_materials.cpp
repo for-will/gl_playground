@@ -191,7 +191,8 @@ int main(int argc, char *argv[]) {
 
         // 渲染
         // 清除颜色缓冲
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::vec3 lightColor;
@@ -210,6 +211,21 @@ int main(int argc, char *argv[]) {
         lightingShader.setVec3("light.ambient", 0.2f * lightColor);
         lightingShader.setVec3("light.diffuse", 0.5f * lightColor);
         lightingShader.setVec3("light.specular", glm::vec3(1.0f));
+        lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.4f);
+        lightingShader.setFloat("material.shininess", 32.0f);
+
+        // // light properties
+        // lightingShader.setVec3("light.ambient", 1.0f, 1.0f, 1.0f); // note that all light colors are set at full intensity
+        // lightingShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+        // lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        //
+        // // material properties
+        // lightingShader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
+        // lightingShader.setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+        // lightingShader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+        // lightingShader.setFloat("material.shininess", 32.0f);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
@@ -221,12 +237,6 @@ int main(int argc, char *argv[]) {
         // 绘制三角形
         glm::mat4 model = glm::mat4(1.0f);
         lightingShader.setMat4("model", model);
-        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.4f);
-        lightingShader.setFloat("material.shininess", 32.0f);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -234,6 +244,7 @@ int main(int argc, char *argv[]) {
         lightCubeShader.use();
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
+        lightCubeShader.setVec3("lightColor", glm::vec3(0.8f));
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube

@@ -137,8 +137,9 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
-    const auto lightingShader = Shader("../shader/basic_lighting_e2.vert", "../shader/basic_lighting_e2.frag");
+    const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
+    // const auto lightingShader = Shader("../shader/basic_lighting_e2.vert", "../shader/basic_lighting_e2.frag");
+    // const auto lightingShader = Shader("../shader/basic_lighting_e3.vert", "../shader/basic_lighting_e3.frag");
     const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
 
 
@@ -224,7 +225,7 @@ int main(int argc, char *argv[]) {
         lightCubeShader.setMat4("view", view);
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);

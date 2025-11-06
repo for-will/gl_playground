@@ -201,7 +201,10 @@ int main(int argc, char *argv[]) {
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
         lightPos.x = sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-        lightingShader.setVec3("lightPos", lightPos);
+        lightingShader.setVec3("light.position", lightPos);
+        lightingShader.setVec3("light.ambient", glm::vec3(0.2f));
+        lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
+        lightingShader.setVec3("light.specular", glm::vec3(1.0f));
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
@@ -219,6 +222,7 @@ int main(int argc, char *argv[]) {
         lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.4f);
         lightingShader.setFloat("material.shininess", 32.0f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 

@@ -63,6 +63,7 @@ set(hello_names
         hello_lamp
         02_02_basic_lighting
         02_03_lighting_materials
+        02_04_lighting_maps
 )
 
 foreach (name ${hello_names})

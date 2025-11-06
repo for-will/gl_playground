@@ -21,54 +21,54 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 600
 
 
 constexpr float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
 };
 
 constexpr GLubyte indices[] = {
@@ -105,9 +105,6 @@ constexpr glm::vec3 cubePositions[] = {
     glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
-// glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-// glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-// glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 lightPos(0.2f, 1.5f, 1.2f);
 
 // Camera
@@ -142,17 +139,6 @@ int main(int argc, char *argv[]) {
 
     const auto lightingShader = Shader("../shader/basic_light.vert", "../shader/basic_light.frag");
     const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
-
-
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    // constexpr float vertices[] = {
-    //     // ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-    //     0.5f, 0.5f, 0.0f,/*****/1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
-    //     0.5f, -0.5f, 0.0f,/****/0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
-    //     -0.5f, -0.5f, 0.0f,/***/0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-    //     -0.5f, 0.5f, 0.0f,/****/1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // 左上
-    // };
 
 
     unsigned int VAO, VBO, EBO;
@@ -211,9 +197,6 @@ int main(int argc, char *argv[]) {
 
         // be sure to activate shader when setting uniforms/drawing objects
         lightingShader.use();
-        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        // lightingShader.setVec3("lightPos", lightPos);
         lightingShader.setVec3("viewPos", camera.Position);
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
         lightPos.x = sin(glfwGetTime()) * 2.0f;
@@ -221,25 +204,20 @@ int main(int argc, char *argv[]) {
         lightingShader.setVec3("lightPos", lightPos);
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
+                                                100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
 
         // 绘制三角形
         glBindVertexArray(VAO);
-        // const auto &ps = glm::vec3(0.0f, 0.0f, -1.0f);
-        // auto model = glm::translate(glm::mat4(), ps);
-        // model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 model = glm::mat4(1.0f);
         lightingShader.setMat4("model", model);
         lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // lightCubeShader.use();
-        // lightCubeShader.setMat4("view", camera.GetViewMatrix());
-        // lightCubeShader.setMat4("projection", projection);
         lightCubeShader.use();
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
@@ -314,10 +292,10 @@ void processInput(GLFWwindow *window) {
         camera.ProcessMouseMovement(0, -deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        camera.ProcessMouseMovement( -deltaTime, 0);
+        camera.ProcessMouseMovement(-deltaTime, 0);
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        camera.ProcessMouseMovement( deltaTime, 0);
+        camera.ProcessMouseMovement(deltaTime, 0);
     }
 }
 
@@ -336,42 +314,18 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
 
-    // float sensitivity = 0.05;
-    // xoffset *= sensitivity;
-    // yoffset *= sensitivity;
     camera.ProcessMouseMovement(xoffset, yoffset);
-
-    // yaw += xoffset;
-    // pitch += yoffset;
-    //
-    // if (pitch > 89.0f)
-    //     pitch = 89.0f;
-    // if (pitch < -89.0f)
-    //     pitch = -89.0f;
-
-    // glm::vec3 front;
-    // front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    // front.y = sin(glm::radians(pitch));
-    // front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    // cameraFront = glm::normalize(front);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    // fov -= static_cast<float>(yoffset);
-    // if (fov < 1.0f)
-    //     fov = 1.0f;
-    // if (fov > 65.0f)
-    //     fov = 65.0f;
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);

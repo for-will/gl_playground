@@ -108,7 +108,7 @@ constexpr glm::vec3 cubePositions[] = {
 glm::vec3 lightPos(0.2f, 1.5f, 1.2f);
 
 // Camera
-Camera camera(glm::vec3(0.0f, 1.0f, 4.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 
@@ -130,15 +130,17 @@ int main(int argc, char *argv[]) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // glfwSetCursorPosCallback(window, mouse_callback);
-    // glfwSetScrollCallback(window, scroll_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // const auto lightingShader = Shader("../shader/2.4.lighting_maps.vert", "../shader/2.5.light_casters.frag");
-    const auto lightingShader = Shader("../shader/2.4.lighting_maps.vert", "../shader/2.5.light_caster2.frag");
+    // const char* LightShader = "../shader/2.5.light_casters.frag";
+    // const char* LightShader = "../shader/2.5.light_caster2.frag";
+    const char* LightShader = "../shader/2.5.spotlight.frag";
+    const auto lightingShader = Shader("../shader/2.4.lighting_maps.vert", LightShader);
     const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
 
 
@@ -218,14 +220,15 @@ int main(int argc, char *argv[]) {
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
         lightPos.x = sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-        lightingShader.setVec3("light.position", lightPos);
-        // lightingShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+        lightingShader.setVec3("light.position", camera.Position);
+        lightingShader.setVec3("light.direction", camera.Front);
+        lightingShader.setFloat("light.cutOff", cos(glm::radians(10.5f)));
         lightingShader.setVec3("light.ambient", glm::vec3(0.2f));
         lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
         lightingShader.setVec3("light.specular", glm::vec3(1.0f));
         lightingShader.setFloat("light.constant", 1.0f);
-        lightingShader.setFloat("light.linear", 0.09f);
-        lightingShader.setFloat("light.quadratic", 0.032f);
+        lightingShader.setFloat("light.linear", 0.045f);
+        lightingShader.setFloat("light.quadratic", 0.0075f);
 
         // material properties
         lightingShader.setInt("material.diffuse", 0);

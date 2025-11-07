@@ -166,6 +166,8 @@ int main(int argc, char *argv[]) {
 
     loadTexture("../assets/container2.png", GL_RGBA, GL_TEXTURE0);
     loadTexture("../assets/container2_specular.png", GL_RGBA, GL_TEXTURE1);
+    loadTexture("../assets/matrix.jpg", GL_RGB, GL_TEXTURE2);
+    // loadTexture("../assets/lighting_maps_specular_color.png", GL_RGBA, GL_TEXTURE1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -186,13 +188,13 @@ int main(int argc, char *argv[]) {
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-
-
     glEnable(GL_DEPTH_TEST);
+    float matrixMove = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         const float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        matrixMove += deltaTime;
 
         // 输入
         processInput(window);
@@ -232,7 +234,9 @@ int main(int argc, char *argv[]) {
         // material properties
         lightingShader.setInt("material.diffuse", 0);
         lightingShader.setInt("material.specular", 1);
+        lightingShader.setInt("material.emission", 2);
         lightingShader.setFloat("material.shininess", 64.0f);
+        lightingShader.setFloat("matrixmove", matrixMove);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,

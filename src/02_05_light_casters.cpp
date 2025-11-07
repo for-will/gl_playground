@@ -223,6 +223,7 @@ int main(int argc, char *argv[]) {
         lightingShader.setVec3("light.position", camera.Position);
         lightingShader.setVec3("light.direction", camera.Front);
         lightingShader.setFloat("light.cutOff", cos(glm::radians(10.5f)));
+        lightingShader.setFloat("light.outerCutOff", cos(glm::radians(12.5f)));
         lightingShader.setVec3("light.ambient", glm::vec3(0.2f));
         lightingShader.setVec3("light.diffuse", glm::vec3(0.5f));
         lightingShader.setVec3("light.specular", glm::vec3(1.0f));

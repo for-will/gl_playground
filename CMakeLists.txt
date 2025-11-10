@@ -11,6 +11,7 @@ find_package(GLUT REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_library(M_LIBRARY m)
 find_library(GLTOOLS_LIBRARY gltools PATHS "${PROJECT_SOURCE_DIR}/GLTools/lib" NO_CACHE NO_DEFAULT_PATH)
+find_library(ASSIMP_LIBRARY assimp PATHS "${PROJECT_SOURCE_DIR}/assimp" NO_CACHE NO_DEFAULT_PATH)
 pkg_search_module(GLEW REQUIRED glew)
 pkg_search_module(GLFW REQUIRED glfw3)
 
@@ -26,6 +27,7 @@ link_directories(${GLEW_LIBRARY_DIRS} ${GLFW_LIBRARY_DIRS})
 
 include_directories("${PROJECT_SOURCE_DIR}/GLTools/include"
         "${PROJECT_SOURCE_DIR}/glad/include"
+        "${PROJECT_SOURCE_DIR}/assimp/include"
         "${PROJECT_SOURCE_DIR}/stb"
         "${PROJECT_SOURCE_DIR}"
 )
@@ -83,3 +85,23 @@ foreach (name ${hello_names})
     )
 endforeach ()
 
+
+set(model_projects
+        03_03_model_loading
+)
+
+foreach (name ${model_projects})
+    add_executable(${name}
+            src/${name}.cpp
+            glad/src/glad.c
+            stb/stb_image.cpp
+    )
+
+    target_link_libraries(${name}
+            ${OPENGL_LIBRARIES}
+            ${GLFW_LIBRARIES}
+            ${M_LIBRARY}
+            ${X11_LIBRARIES}
+            ${ASSIMP_LIBRARY}
+    )
+endforeach ()

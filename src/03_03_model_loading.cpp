@@ -145,7 +145,8 @@ int main(int argc, char *argv[]) {
 
     const char *vertex_path = "../shader/3.3.model_loading.vert";
     const char *fragment_path = "../shader/3.3.model_loading.frag";
-    auto lightingShader = Shader(vertex_path, fragment_path);
+    auto ourShader = Shader(vertex_path, fragment_path);
+    const auto lightCubeShader = Shader("../shader/projection.vert", "../shader/lamp.frag");
 
 
     unsigned int VAO, VBO, EBO;
@@ -171,9 +172,10 @@ int main(int argc, char *argv[]) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    loadTexture("../assets/container2.png", GL_RGBA, GL_TEXTURE0);
-    loadTexture("../assets/container2_specular.png", GL_RGBA, GL_TEXTURE1);
-    loadTexture("../assets/matrix.jpg", GL_RGB, GL_TEXTURE2);
+    stbi_set_flip_vertically_on_load(true);
+    // loadTexture("../assets/container2.png", GL_RGBA, GL_TEXTURE0);
+    // loadTexture("../assets/container2_specular.png", GL_RGBA, GL_TEXTURE1);
+    // loadTexture("../assets/matrix.jpg", GL_RGB, GL_TEXTURE2);
     // loadTexture("../assets/lighting_maps_specular_color.png", GL_RGBA, GL_TEXTURE1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
@@ -216,59 +218,59 @@ int main(int argc, char *argv[]) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::vec3 lightColor;
-        lightColor.x = sin(glfwGetTime() * 2.0f);
-        lightColor.y = sin(glfwGetTime() * 0.7f);
-        lightColor.z = cos(glfwGetTime() * 1.3f);
+        // glm::vec3 lightColor;
+        // lightColor.x = sin(glfwGetTime() * 2.0f);
+        // lightColor.y = sin(glfwGetTime() * 0.7f);
+        // lightColor.z = cos(glfwGetTime() * 1.3f);
 
 
         // be sure to activate shader when setting uniforms/drawing objects
-        lightingShader.use();
-        lightingShader.setVec3("viewPos", camera.Position);
+        ourShader.use();
+        ourShader.setVec3("viewPos", camera.Position);
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
 
-        lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        lightingShader.setVec3("dirLight.ambient", glm::vec3(0.2f));
-        lightingShader.setVec3("dirLight.diffuse", glm::vec3(0.2f));
-        lightingShader.setVec3("dirLight.specular", glm::vec3(0.2f));
+        ourShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        ourShader.setVec3("dirLight.ambient", glm::vec3(0.2f));
+        ourShader.setVec3("dirLight.diffuse", glm::vec3(0.2f));
+        ourShader.setVec3("dirLight.specular", glm::vec3(0.2f));
 
-        lightingShader.setVec3("spotLight.position", camera.Position);
-        lightingShader.setVec3("spotLight.direction", camera.Front);
-        lightingShader.setFloat("spotLight.cutOff", cos(glm::radians(10.5f)));
-        lightingShader.setFloat("spotLight.outerCutOff", cos(glm::radians(12.5f)));
-        lightingShader.setVec3("spotLight.ambient", glm::vec3(0.0f));
-        lightingShader.setVec3("spotLight.diffuse", glm::vec3(1.0f));
-        lightingShader.setVec3("spotLight.specular", glm::vec3(1.0f));
-        lightingShader.setFloat("spotLight.constant", 1.0f);
-        lightingShader.setFloat("spotLight.linear", 0.045f);
-        lightingShader.setFloat("spotLight.quadratic", 0.0075f);
+        ourShader.setVec3("spotLight.position", camera.Position);
+        ourShader.setVec3("spotLight.direction", camera.Front);
+        ourShader.setFloat("spotLight.cutOff", cos(glm::radians(10.5f)));
+        ourShader.setFloat("spotLight.outerCutOff", cos(glm::radians(12.5f)));
+        ourShader.setVec3("spotLight.ambient", glm::vec3(0.0f));
+        ourShader.setVec3("spotLight.diffuse", glm::vec3(1.0f));
+        ourShader.setVec3("spotLight.specular", glm::vec3(1.0f));
+        ourShader.setFloat("spotLight.constant", 1.0f);
+        ourShader.setFloat("spotLight.linear", 0.045f);
+        ourShader.setFloat("spotLight.quadratic", 0.0075f);
 
         for (int i = 0; i < std::size(pointLightPositions); i++) {
             char name[128];
             snprintf(name, sizeof(name), "pointLights[%d]", i);
             // point light 4
-            lightingShader.setVec3(std::string(name) + ".position", pointLightPositions[i]);
-            lightingShader.setVec3(std::string(name) + ".ambient", 0.05f, 0.05f, 0.05f);
-            lightingShader.setVec3(std::string(name) + ".diffuse", 0.8f, 0.8f, 0.8f);
-            lightingShader.setVec3(std::string(name) + ".specular", 1.0f, 1.0f, 1.0f);
-            lightingShader.setFloat(std::string(name) + ".constant", 1.0f);
-            lightingShader.setFloat(std::string(name) + ".linear", 0.09f);
-            lightingShader.setFloat(std::string(name) + ".quadratic", 0.032f);
+            ourShader.setVec3(std::string(name) + ".position", pointLightPositions[i]);
+            ourShader.setVec3(std::string(name) + ".ambient", 0.05f, 0.05f, 0.05f);
+            ourShader.setVec3(std::string(name) + ".diffuse", 0.8f, 0.8f, 0.8f);
+            ourShader.setVec3(std::string(name) + ".specular", 1.0f, 1.0f, 1.0f);
+            ourShader.setFloat(std::string(name) + ".constant", 1.0f);
+            ourShader.setFloat(std::string(name) + ".linear", 0.09f);
+            ourShader.setFloat(std::string(name) + ".quadratic", 0.032f);
         }
 
         // material properties
-        lightingShader.setInt("material.diffuse", 0);
-        lightingShader.setInt("material.specular", 1);
-        lightingShader.setInt("material.emission", 2);
-        lightingShader.setFloat("material.shininess", 64.0f);
-        lightingShader.setFloat("matrixmove", matrixMove);
+        ourShader.setInt("material.diffuse", 0);
+        ourShader.setInt("material.specular", 1);
+        ourShader.setInt("material.emission", 2);
+        ourShader.setFloat("material.shininess", 64.0f);
+        ourShader.setFloat("matrixmove", matrixMove);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
                                                 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
 
 
         // render the loaded model
@@ -276,8 +278,8 @@ int main(int argc, char *argv[]) {
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f)); // it's a bit too big for our scene, so scale it down
-        lightingShader.setMat4("model", model);
-        ourModel.Draw(lightingShader);
+        ourShader.setMat4("model", model);
+        ourModel.Draw(ourShader);
 
         // // 绘制三角形
         // glBindVertexArray(VAO);
@@ -290,20 +292,20 @@ int main(int argc, char *argv[]) {
         //     glDrawArrays(GL_TRIANGLES, 0, 36);
         // }
 
-        // lightCubeShader.use();
-        // lightCubeShader.setMat4("projection", projection);
-        // lightCubeShader.setMat4("view", view);
-        // lightCubeShader.setVec3("lightColor", glm::vec3(0.8f));
-        //
-        // glBindVertexArray(lightCubeVAO);
-        // for (auto ps : pointLightPositions) {
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, ps);
-        //     model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
-        //     lightCubeShader.setMat4("model", model);
-        //
-        //     glDrawArrays(GL_TRIANGLES, 0, 36);
-        // }
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        lightCubeShader.setVec3("lightColor", glm::vec3(0.8f));
+
+        glBindVertexArray(lightCubeVAO);
+        for (auto ps : pointLightPositions) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, ps);
+            model = glm::scale(model, glm::vec3(0.1f)); // a smaller cube
+            lightCubeShader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, static_cast<const void *>(nullptr));
 

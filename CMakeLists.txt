@@ -69,6 +69,7 @@ set(hello_names
         02_05_light_casters
         02_06_multiple_lights
         04_01_depth_testing
+        04_02_stencil_testing
 )
 
 foreach (name ${hello_names})

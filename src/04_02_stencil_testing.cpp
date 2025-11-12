@@ -196,8 +196,8 @@ int main() {
 
         shader.use();
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
-                                                100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
+                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -214,8 +214,9 @@ int main() {
         glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
         glStencilMask(0xFF); // 启用模板缓冲写入
         glBindVertexArray(cubeVAO);
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        shader.setInt("texture1", 1);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
@@ -231,7 +232,7 @@ int main() {
         singleColorShader.use();
         singleColorShader.setMat4("view", view);
         singleColorShader.setMat4("projection", projection);
-        float scale = 1.1;
+        float scale = 1.06;
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         model = glm::scale(model, glm::vec3(scale, scale, scale));

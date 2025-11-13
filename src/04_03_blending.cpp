@@ -80,6 +80,10 @@ int main() {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+
     // build and compile shaders
     // -------------------------
     Shader shader("../shader/4.1.depth_testing.vert", "../shader/4.3.blending.frag");
@@ -191,7 +195,8 @@ int main() {
     // -------------
     unsigned int cubeTexture = loadTexture("../assets/marble.jpg");
     unsigned int floorTexture = loadTexture("../assets/metal.png");
-    unsigned int grassTexture = loadTexture("../assets/grass.png");
+    // unsigned int grassTexture = loadTexture("../assets/grass.png");
+    unsigned int grassTexture = loadTexture("../assets/blending_transparent_window.png");
 
     // shader configuration
     // --------------------

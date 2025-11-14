@@ -71,6 +71,7 @@ set(hello_names
         04_01_depth_testing
         04_02_stencil_testing
         04_03_blending
+        04_04_face_culling
 )
 
 foreach (name ${hello_names})

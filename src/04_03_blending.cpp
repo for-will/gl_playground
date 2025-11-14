@@ -11,6 +11,7 @@
 #include "model.h"
 
 #include <iostream>
+#include <map>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -203,12 +204,12 @@ int main() {
     shader.use();
     shader.setInt("texture1", 0);
 
-    std::vector<glm::vec3> vegetation;
-    vegetation.emplace_back(-1.5f, 0.0f, -0.48f);
-    vegetation.emplace_back(1.5f, 0.0f, 0.51f);
-    vegetation.emplace_back(0.0f, 0.0f, 0.7f);
-    vegetation.emplace_back(-0.3f, 0.0f, -2.3f);
-    vegetation.emplace_back(0.5f, 0.0f, -0.6f);
+    std::vector<glm::vec3> windows;
+    windows.emplace_back(-1.5f, 0.0f, -0.48f);
+    windows.emplace_back(1.5f, 0.0f, 0.51f);
+    windows.emplace_back(0.0f, 0.0f, 0.7f);
+    windows.emplace_back(-0.3f, 0.0f, -2.3f);
+    windows.emplace_back(0.5f, 0.0f, -0.6f);
 
     // render loop
     // -----------
@@ -244,14 +245,6 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        glBindVertexArray(vegetationVAO);
-        glBindTexture(GL_TEXTURE_2D, grassTexture);
-        for (unsigned int i = 0; i < vegetation.size(); i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
-            shader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
 
         // cubes
         glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
@@ -288,6 +281,20 @@ int main() {
         // glDrawArrays(GL_TRIANGLES, 0, 36);
         // glStencilMask(0xFF);
         // glEnable(GL_DEPTH_TEST);
+
+        std::map<float, glm::vec3> sorted;
+        for (unsigned int i = 0; i < windows.size(); i++) {
+            float distance = glm::length(camera.Position - windows[i]);
+            sorted[distance] = windows[i];
+        }
+        glBindVertexArray(vegetationVAO);
+        glBindTexture(GL_TEXTURE_2D, grassTexture);
+        for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, it->second);
+            shader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

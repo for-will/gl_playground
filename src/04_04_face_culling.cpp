@@ -85,8 +85,6 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
-    glEnable(GL_CULL_FACE);
-
     // build and compile shaders
     // -------------------------
     Shader shader("../shader/4.1.depth_testing.vert", "../shader/4.3.blending.frag");
@@ -231,6 +229,8 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
 
         shader.use();
         glm::mat4 view = camera.GetViewMatrix();
@@ -264,26 +264,6 @@ int main() {
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        // // glStencilMask(0x00);
-        // glDisable(GL_DEPTH_TEST);
-        // singleColorShader.use();
-        // singleColorShader.setMat4("view", view);
-        // singleColorShader.setMat4("projection", projection);
-        // float scale = 1.06;
-        // model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        // model = glm::scale(model, glm::vec3(scale, scale, scale));
-        // singleColorShader.setMat4("model", model);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        // model = glm::scale(model, glm::vec3(scale, scale, scale));
-        // singleColorShader.setMat4("model", model);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glStencilMask(0xFF);
-        // glEnable(GL_DEPTH_TEST);
 
         std::map<float, glm::vec3> sorted;
         for (unsigned int i = 0; i < windows.size(); i++) {

@@ -348,7 +348,7 @@ int main() {
         screenShader.use();
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-        screenShader.setInt("texture1", 1);
+        screenShader.setInt("screenTexture", 1);
         glBindVertexArray(quadVAO);
         glPolygonMode(GL_FRONT, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 6);

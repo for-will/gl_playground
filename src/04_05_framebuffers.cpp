@@ -217,7 +217,7 @@ int main() {
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture("../assets/marble.jpg");
+    unsigned int cubeTexture = loadTexture("../assets/container2.png");
     unsigned int floorTexture = loadTexture("../assets/metal.png");
     unsigned int grassTexture = loadTexture("../assets/grass.png");
 

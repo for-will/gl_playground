@@ -72,6 +72,7 @@ set(hello_names
         04_02_stencil_testing
         04_03_blending
         04_04_face_culling
+        04_05_framebuffers
 )
 
 foreach (name ${hello_names})

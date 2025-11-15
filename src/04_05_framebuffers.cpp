@@ -341,7 +341,7 @@ int main() {
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClearColor(0.2, 0.3, 0.3, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
         // draw Screen quad
@@ -350,7 +350,7 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, texColorBuffer);
         screenShader.setInt("texture1", 1);
         glBindVertexArray(quadVAO);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT, GL_FILL);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
 

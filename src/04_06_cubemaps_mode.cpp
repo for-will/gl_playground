@@ -413,6 +413,11 @@ int main() {
         setShaderLight(modelShader);
         modelShader.setMat4("view", view);
         modelShader.setMat4("projection", projection);
+
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        modelShader.setInt("skybox", 4);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
         // translate it down so it's at the center of the scene

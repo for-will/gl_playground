@@ -15,9 +15,12 @@ struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_specular1;
     sampler2D texture_normal1;
+    sampler2D texture_height1;
 };
 
 uniform Material material;
+
+uniform samplerCube skybox;
 
 // 点光源
 struct PointLight {
@@ -67,13 +70,20 @@ void main() {
     // 第一阶段：定向光照
     //    vec3 result = CalcDirLight(dirLight, norm, viewDir);
 
-    vec3 result= vec3(0.0, 0.0, 0.0);
-    // 第二阶段：点光源
-    for (int i = 0; i < NR_POINT_LIGHTS; i++){
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
-    }
-    // 第三阶段：聚光
-     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    //    vec3 result= vec3(0.0, 0.0, 0.0);
+    //    // 第二阶段：点光源
+    //    for (int i = 0; i < NR_POINT_LIGHTS; i++){
+    //        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    //    }
+    //    // 第三阶段：聚光
+    //     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+
+    vec3 result = texture(material.texture_diffuse1, TexCoords).rgb;
+
+    // 反射skybox
+    vec3 I = normalize(FragPos - viewPos);
+    vec3 R = reflect(I, normalize(Normal));
+    result += texture(skybox, R).rgb * texture(material.texture_height1, TexCoords).rgb;
 
     FragColor = vec4(result, 1.0);
 }

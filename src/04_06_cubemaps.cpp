@@ -91,7 +91,8 @@ int main() {
     // -------------------------
     Shader shader("../shader/4.1.depth_testing.vert", "../shader/4.3.blending.frag");
     Shader skyboxShader("../shader/4.6.skybox.vert", "../shader/4.6.skybox.frag");
-    Shader reflectShader("../shader/4.6.reflect.vert", "../shader/4.6.reflect.frag");
+    // Shader reflectShader("../shader/4.6.reflect.vert", "../shader/4.6.reflect.frag");
+    Shader reflectShader("../shader/4.6.reflect.vert", "../shader/4.6.refract.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------

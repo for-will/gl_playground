@@ -94,6 +94,7 @@ endforeach ()
 
 set(model_projects
         03_03_model_loading
+        04_06_cubemaps_mode
 )
 
 foreach (name ${model_projects})

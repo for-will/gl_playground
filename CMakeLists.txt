@@ -74,6 +74,7 @@ set(hello_names
         04_04_face_culling
         04_05_framebuffers
         04_06_cubemaps
+        04_08_advanced_glsl
 )
 
 foreach (name ${hello_names})

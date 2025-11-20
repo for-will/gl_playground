@@ -87,9 +87,28 @@ int main() {
 
     // build and compile shaders
     // -------------------------
-    Shader shader("../shader/4.1.depth_testing.vert", "../shader/4.3.blending.frag");
-    Shader cubeShader("../shader/4.1.depth_testing.vert", "../shader/4.8.advanced.frag");
-    // Shader singleColorShader("../shader/4.1.depth_testing.vert", "../shader/4.2.stencil_testing.frag");
+    Shader shaderRed("../shader/4.8.matrices.vert", "../shader/4.8.red.frag");
+    Shader shaderGreen("../shader/4.8.matrices.vert", "../shader/4.8.green.frag");
+    Shader shaderBlue("../shader/4.8.matrices.vert", "../shader/4.8.blue.frag");
+    Shader shaderYellow("../shader/4.8.matrices.vert", "../shader/4.8.yellow.frag");
+
+    unsigned int redUniformBlockIndex = glGetUniformBlockIndex(shaderRed.ID, "Matrices");
+    unsigned int greenUniformBlockIndex = glGetUniformBlockIndex(shaderGreen.ID, "Matrices");
+    unsigned int blueUniformBlockIndex = glGetUniformBlockIndex(shaderBlue.ID, "Matrices");
+    unsigned int yellowUniformBlockIndex = glGetUniformBlockIndex(shaderYellow.ID, "Matrices");
+
+    glUniformBlockBinding(shaderRed.ID, redUniformBlockIndex, 0);
+    glUniformBlockBinding(shaderGreen.ID, greenUniformBlockIndex, 0);
+    glUniformBlockBinding(shaderBlue.ID, blueUniformBlockIndex, 0);
+    glUniformBlockBinding(shaderYellow.ID, yellowUniformBlockIndex, 0);
+
+    // 创建Uniform缓冲对象本身，并将其绑定到绑定点0
+    unsigned int uboMatrices;
+    glGenBuffers(1, &uboMatrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -196,21 +215,15 @@ int main() {
     // load textures
     // -------------
     unsigned int cubeTexture = loadTexture("../assets/marble.jpg");
-    unsigned int floorTexture = loadTexture("../assets/metal.png");
-    // unsigned int grassTexture = loadTexture("../assets/grass.png");
-    unsigned int grassTexture = loadTexture("../assets/grass.png");
 
     // shader configuration
     // --------------------
-    shader.use();
-    shader.setInt("texture1", 0);
-
-    std::vector<glm::vec3> windows;
-    windows.emplace_back(-1.5f, 0.0f, -0.48f);
-    windows.emplace_back(1.5f, 0.0f, 0.51f);
-    windows.emplace_back(0.0f, 0.0f, 0.7f);
-    windows.emplace_back(-0.3f, 0.0f, -2.3f);
-    windows.emplace_back(0.5f, 0.0f, -0.6f);
+    // std::vector<glm::vec3> windows;
+    // windows.emplace_back(-1.5f, 0.0f, -0.48f);
+    // windows.emplace_back(1.5f, 0.0f, 0.51f);
+    // windows.emplace_back(0.0f, 0.0f, 0.7f);
+    // windows.emplace_back(-0.3f, 0.0f, -2.3f);
+    // windows.emplace_back(0.5f, 0.0f, -0.6f);
 
     // render loop
     // -----------
@@ -233,60 +246,41 @@ int main() {
         // glCullFace(GL_BACK);
         // glFrontFace(GL_CCW);
 
-        shader.use();
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-
-        // // floor
-        // glStencilMask(0x00);
-        // glBindVertexArray(planeVAO);
-        // glBindTexture(GL_TEXTURE_2D, floorTexture);
-        // shader.setMat4("model", glm::mat4(1.0f));
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        // glBindVertexArray(0);
-
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // cubes
-        cubeShader.use();
-        cubeShader.setMat4("view", view);
-        cubeShader.setMat4("projection", projection);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
-        glStencilMask(0xFF); // 启用模板缓冲写入
         glBindVertexArray(cubeVAO);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, cubeTexture);
-        cubeShader.setInt("texture1", 1);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        cubeShader.setMat4("model", model);
+        shaderRed.use();
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3(-0.75f, 0.75f, 0.0f)); // 移动到左上角
+        shaderRed.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        shaderGreen.use();
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        cubeShader.setMat4("model", model);
+        model = glm::translate(model, glm::vec3(-0.75f, -0.75f, 0.0f)); // 移动到左下角
+        shaderGreen.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        shaderBlue.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.75f, 0.75f, 0.0f)); // 移动到右上角
+        shaderBlue.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // shader.use();
-        // std::map<float, glm::vec3> sorted;
-        // for (unsigned int i = 0; i < windows.size(); i++) {
-        //     float distance = glm::length(camera.Position - windows[i]);
-        //     sorted[distance] = windows[i];
-        // }
-        // glDisable(GL_CULL_FACE);
-        // glBindVertexArray(vegetationVAO);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, grassTexture);
-        // shader.setInt("texture1", 1);
-        // for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, it->second);
-        //     shader.setMat4("model", model);
-        //     glDrawArrays(GL_TRIANGLES, 0, 6);
-        // }
+        shaderYellow.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.75f, -0.75f, 0.0f)); // 移动到右下角
+        shaderYellow.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

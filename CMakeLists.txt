@@ -75,6 +75,7 @@ set(hello_names
         04_05_framebuffers
         04_06_cubemaps
         04_08_advanced_glsl
+        04_09_geometry_shader
 )
 
 foreach (name ${hello_names})

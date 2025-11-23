@@ -91,7 +91,9 @@ int main() {
     // Shader shaderGreen("../shader/4.8.matrices.vert", "../shader/4.8.green.frag");
     // Shader shaderBlue("../shader/4.8.matrices.vert", "../shader/4.8.blue.frag");
     // Shader shaderYellow("../shader/4.8.matrices.vert", "../shader/4.8.yellow.frag");
-    Shader shader("../shader/4.9.geometry_shader.vert", "../shader/4.9.geometry_shader.frag");
+    Shader shader("../shader/4.9.geometry_shader.vert",
+                  "../shader/4.9.geometry_shader.geom",
+                  "../shader/4.9.geometry_shader.frag");
 
     // unsigned int redUniformBlockIndex = glGetUniformBlockIndex(shaderRed.ID, "Matrices");
     // unsigned int greenUniformBlockIndex = glGetUniformBlockIndex(shaderGreen.ID, "Matrices");

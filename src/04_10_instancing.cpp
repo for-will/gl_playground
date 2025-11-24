@@ -63,7 +63,7 @@ int main() {
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -102,13 +102,13 @@ int main() {
     // ------------------------------------------------------------------
     float quadVertices[] = {
         // 位置          // 颜色
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-        -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+        -0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+        0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+        -0.05f, -0.05f, 0.0f, 0.0f, 1.0f,
 
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-         0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+        -0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+        0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+        0.05f, 0.05f, 0.0f, 1.0f, 1.0f
     };
     // cube VAO
     unsigned int VAO, VBO;
@@ -123,6 +123,23 @@ int main() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (2 * sizeof(float)));
 
     glBindVertexArray(0);
+
+
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1f;
+    for (int y = -10; y < 10; y += 2) {
+        for (int x = -10; x < 10; x += 2) {
+            glm::vec2 translation;
+            translation.x = (float) x / 10.0f + offset;
+            translation.y = (float) y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
+    shader.use();
+    for (unsigned int i = 0; i < 100; i++) {
+        shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
+    }
 
 
     // render loop
@@ -162,7 +179,7 @@ int main() {
         // glm::mat4 model;
         // model = glm::translate(model, glm::vec3(-0.75f, 0.75f, 0.0f)); // 移动到左上角
         // shaderRed.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

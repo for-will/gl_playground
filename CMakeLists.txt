@@ -76,6 +76,7 @@ set(hello_names
         04_06_cubemaps
         04_08_advanced_glsl
         04_09_geometry_shader
+        04_10_instancing
 )
 
 foreach (name ${hello_names})

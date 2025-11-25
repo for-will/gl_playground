@@ -152,6 +152,7 @@ public:
             Code = shaderStream.str();
         } catch (std::ifstream::failure &e) {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+            std::cout << "\tPath: " << path << std::endl;
         }
         const char *ShaderCode = Code.c_str();
 

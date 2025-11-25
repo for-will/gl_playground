@@ -100,6 +100,7 @@ set(model_projects
         04_06_cubemaps_mode
         04_09_explode_mode
         04_09_normal_display
+        04_10_planets
 )
 
 foreach (name ${model_projects})

@@ -39,7 +39,7 @@ glm::vec3 pointLightPositions[] = {
 };
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 55.0f));
 float lastX = (float) SCR_WIDTH / 2.0;
 float lastY = (float) SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -103,10 +103,39 @@ int main() {
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+    unsigned int amount = 2000;
+    glm::mat4 *modelMatrices = new glm::mat4[amount];
+    srand(glfwGetTime());
+    float radius = 50.0;
+    float offset = 2.5f;
+    for (unsigned int i = 0; i < amount; i++) {
+        glm::mat4 model;
+        // 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
+        float angle = (float) i / (float) amount * 360.0f;
+        float displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float x = sin(angle) * radius + displacement;
+        displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float y = displacement * 0.4f; // 让行星带的高度比x和z的宽度要小
+        displacement = (rand() % (int) (2 * offset * 100)) / 100.0f - offset;
+        float z = cos(angle) * radius + displacement;
+        model = glm::translate(model, glm::vec3(x, y, z));
+
+        // 2. 缩放：在 0.05 和 0.25f 之间缩放
+        float scale = (rand() % 20) / 100.0f + 0.05;
+        model = glm::scale(model, glm::vec3(scale));
+
+        // 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
+        float rotAngle = (rand() % 360);
+        model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+        // 4. 添加到矩阵的数组中
+        modelMatrices[i] = model;
+    }
 
     // load models
     // -----------
-    Model ourModel("../assets/nanosuit_reflection/nanosuit.obj");
+    Model ourModel("../assets/planet/planet.obj");
+    Model rockModel("../assets/rock/rock.obj");
 
     // load textures
     // -------------
@@ -156,97 +185,30 @@ int main() {
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // // skybox
-        // glDepthMask(GL_FALSE);
-        // glDisable(GL_CULL_FACE);
-        // skyboxShader.use();
-        // glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-        // glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
-        //                                         (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
-        // skyboxShader.setMat4("view", view);
-        // skyboxShader.setMat4("projection", projection);
-        // skyboxShader.setInt("skyboxTexture", 2);
-        // glBindVertexArray(skyboxVAO);
-        // glActiveTexture(GL_TEXTURE2);
-        // glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glDepthMask(GL_TRUE);
-        //
-        // shader.use();
-        // view = camera.GetViewMatrix();
-        // projection = glm::perspective(glm::radians(camera.Zoom),
-        //                               (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
-        // shader.setMat4("view", view);
-        // shader.setMat4("projection", projection);
 
-        // floor
-        // glEnable(GL_CULL_FACE);
-        // // glStencilMask(0x00);
-        // glBindVertexArray(planeVAO);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, floorTexture);
-        // shader.setInt("texture1", 1);
-        // shader.setMat4("model", glm::mat4(1.0f));
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        // glBindVertexArray(0);
-
-        // cubes
-        // reflectShader.use();
-        // reflectShader.setMat4("view", view);
-        // reflectShader.setMat4("projection", projection);
-        // reflectShader.setVec3("cameraPos", camera.Position);
-        // glDisable(GL_CULL_FACE);
-        // glBindVertexArray(cubeVAO);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        // reflectShader.setInt("skybox", 1);
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        // reflectShader.setMat4("model", model);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        // reflectShader.setMat4("model", model);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // std::map<float, glm::vec3> sorted;
-        // for (unsigned int i = 0; i < windows.size(); i++) {
-        //     float distance = glm::length(camera.Position - windows[i]);
-        //     sorted[distance] = windows[i];
-        // }
-        // glDisable(GL_CULL_FACE);
-        // glBindVertexArray(vegetationVAO);
-        // glBindTexture(GL_TEXTURE_2D, grassTexture);
-        // for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
-        //     glm::mat4 model = glm::mat4(1.0f);
-        //     model = glm::translate(model, it->second);
-        //     shader.setMat4("model", model);
-        //     glDrawArrays(GL_TRIANGLES, 0, 6);
-        // }
-
-
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // glClearColor(0.2, 0.3, 0.3, 1.0);
-        // glClear(GL_COLOR_BUFFER_BIT);
-        // glDisable(GL_DEPTH_TEST);
 
         // render the loaded model
         modelShader.use();
         setShaderLight(modelShader);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
-                                      (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
 
         modelShader.setMat4("view", view);
         modelShader.setMat4("projection", projection);
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
-        // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // it's a bit too big for our scene, so scale it down
+        model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
         modelShader.setMat4("model", model);
         // modelShader.setFloat("time", glfwGetTime());
         ourModel.Draw(modelShader);
+
+        // 绘制小行星
+        for (unsigned int i = 0; i < amount; i++) {
+            modelShader.setMat4("model", modelMatrices[i]);
+            rockModel.Draw(modelShader);
+        }
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

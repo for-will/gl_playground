@@ -6,11 +6,6 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
-//out VS_OUT {
-//    vec2 texCoords;
-//    vec3 normal;
-//    vec3 fragPos;
-//} vs_out;
 
 uniform mat4 model;
 uniform mat4 view;

@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <map>
+#include <format>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -39,7 +40,7 @@ glm::vec3 pointLightPositions[] = {
 };
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 55.0f));
+Camera camera(glm::vec3(0.0f, 30.0f, 225.0f));
 float lastX = (float) SCR_WIDTH / 2.0;
 float lastY = (float) SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -47,6 +48,7 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float interval = 0.0f;
 
 int main() {
     // glfw: initialize and configure
@@ -100,14 +102,16 @@ int main() {
     // -------------------------
     Shader modelShader("../shader/4.10.planets.vert",
                        "../shader/4.10.planets.frag");
+    Shader instanceShader("../shader/4.10.instance_planets.vert",
+                          "../shader/4.10.instance_planets.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    unsigned int amount = 2000;
+    unsigned int amount = 100000;
     glm::mat4 *modelMatrices = new glm::mat4[amount];
     srand(glfwGetTime());
-    float radius = 50.0;
-    float offset = 2.5f;
+    float radius = 150.0;
+    float offset = 25.0f;
     for (unsigned int i = 0; i < amount; i++) {
         glm::mat4 model;
         // 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
@@ -136,6 +140,42 @@ int main() {
     // -----------
     Model ourModel("../assets/planet/planet.obj");
     Model rockModel("../assets/rock/rock.obj");
+
+    // // 顶点缓冲对象
+    // unsigned int buffer;
+    // glGenBuffers(1, &buffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    // glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+    // 顶点缓冲对象
+    unsigned int buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    for (unsigned int i = 0; i < rockModel.meshes.size(); i++) {
+        unsigned int VAO = rockModel.meshes[i].VAO;
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer);
+        // 顶点属性
+        GLsizei vec4Size = sizeof(glm::vec4);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) 0);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (1 * vec4Size));
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (2 * vec4Size));
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (3 * vec4Size));
+
+        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);
+        glVertexAttribDivisor(6, 1);
+
+        glBindVertexArray(0);
+    }
+
 
     // load textures
     // -------------
@@ -176,6 +216,12 @@ int main() {
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        interval += deltaTime;
+        if (interval > 1.0f) {
+            std::string title = std::format("LearnOpenGL-Planets FPS:{:.1f}", 1.0 / deltaTime);
+            glfwSetWindowTitle(window, title.c_str());
+            interval -= 1.0f;
+        }
 
         // input
         // -----
@@ -192,7 +238,7 @@ int main() {
         setShaderLight(modelShader);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
-                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 1000.0f);
 
         modelShader.setMat4("view", view);
         modelShader.setMat4("projection", projection);
@@ -205,9 +251,14 @@ int main() {
         ourModel.Draw(modelShader);
 
         // 绘制小行星
-        for (unsigned int i = 0; i < amount; i++) {
-            modelShader.setMat4("model", modelMatrices[i]);
-            rockModel.Draw(modelShader);
+        instanceShader.use();
+        instanceShader.setMat4("projection", projection);
+        instanceShader.setMat4("view", view);
+        for (unsigned int i = 0; i < rockModel.meshes.size(); i++) {
+            glBindVertexArray(rockModel.meshes[i].VAO);
+            glDrawElementsInstanced(
+                GL_TRIANGLES, rockModel.meshes[i].indices.size(), GL_UNSIGNED_INT, 0, amount
+            );
         }
 
 

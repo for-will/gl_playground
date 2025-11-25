@@ -59,7 +59,7 @@ public:
                 number = std::to_string(diffuseNr++);
             } else if (name == "texture_specular") {
                 number = std::to_string(specularNr++);
-            }else if (name == "texture_height") {
+            } else if (name == "texture_height") {
                 number = std::to_string(heightNr++);
             }
             shader.setInt("material." + name + number, i);
@@ -73,9 +73,11 @@ public:
         glBindVertexArray(0);
     }
 
-private:
+public:
     /* 渲染数据 */
     unsigned int VAO, VBO, EBO;
+
+private:
     /* 函数 */
     void setupMesh() {
         glGenVertexArrays(1, &VAO);

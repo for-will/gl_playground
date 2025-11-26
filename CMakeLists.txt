@@ -77,6 +77,7 @@ set(hello_names
         04_08_advanced_glsl
         04_09_geometry_shader
         04_10_instancing
+        04_11_anti_aliasing
 )
 
 foreach (name ${hello_names})

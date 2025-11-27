@@ -79,6 +79,7 @@ set(hello_names
         04_10_instancing
         04_11_anti_aliasing
         05_01_advanced_lighting
+        05_02_gamma_correction
 )
 
 foreach (name ${hello_names})

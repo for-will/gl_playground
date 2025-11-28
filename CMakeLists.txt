@@ -80,6 +80,7 @@ set(hello_names
         04_11_anti_aliasing
         05_01_advanced_lighting
         05_02_gamma_correction
+        05_03_shadow_mapping
 )
 
 foreach (name ${hello_names})

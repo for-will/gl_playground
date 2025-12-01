@@ -81,6 +81,7 @@ set(hello_names
         05_01_advanced_lighting
         05_02_gamma_correction
         05_03_shadow_mapping
+        05_03_point_shadows
 )
 
 foreach (name ${hello_names})
